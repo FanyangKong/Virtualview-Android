@@ -83,32 +83,29 @@ public class PreviewActivity extends AppCompatActivity {
         sVafContext = ((VirtualViewApplication) getApplication()).getVafContext();
         sViewManager = ((VirtualViewApplication) getApplication()).getViewManager();
 
-        sVafContext.getEventManager().register(EventManager.TYPE_Click, new IEventProcessor() {
-            @Override
-            public boolean process(EventData data) {
-                Log.d(TAG, "TYPE_Click data view:" + data.mView);
-                Log.d(TAG, "TYPE_Click view name:" + data.mVB.getTag("name"));
-                Log.d(TAG, "TYPE_Click view traceId:" + data.mVB.getTag("activityTraceId"));
-                Toast.makeText(PreviewActivity.this,
-                        "TYPE_Click view name:" + data.mVB.getTag("name")
-                                + "\n traceId:" + data.mVB.getTag("activityTraceId"), Toast.LENGTH_LONG).show();
-                return true;
-            }
-        });
+        sVafContext.getEventManager().register(EventManager.TYPE_Click, mClickProcessor);
+        sVafContext.getEventManager().register(EventManager.TYPE_Exposure, mExposureProcessor);
+    }
 
-        sVafContext.getEventManager().register(EventManager.TYPE_Exposure, new IEventProcessor() {
-            @Override
-            public boolean process(EventData data) {
-                Log.d(TAG, "TYPE_Exposure data view:" + data.mView);
-                Log.d(TAG, "TYPE_Exposure view name:" + data.mVB.getTag("name"));
-                Log.d(TAG, "TYPE_Exposure view traceId:" + data.mVB.getTag("activityTraceId"));
+    private IEventProcessor mClickProcessor = data -> {
+        Log.d(TAG, "TYPE_Click data view:" + data.mView);
+        Log.d(TAG, "TYPE_Click view name:" + data.mVB.getTag("name"));
+        Log.d(TAG, "TYPE_Click view traceId:" + data.mVB.getTag("activityTraceId"));
+        Toast.makeText(PreviewActivity.this,
+                "TYPE_Click view name:" + data.mVB.getTag("name")
+                        + "\n traceId:" + data.mVB.getTag("activityTraceId"), Toast.LENGTH_LONG).show();
+        return true;
+    };
+
+    private IEventProcessor mExposureProcessor = data -> {
+        Log.d(TAG, "TYPE_Exposure data view:" + data.mView);
+        Log.d(TAG, "TYPE_Exposure view name:" + data.mVB.getTag("name"));
+        Log.d(TAG, "TYPE_Exposure view traceId:" + data.mVB.getTag("activityTraceId"));
 //                    Toast.makeText(PreviewActivity.this,
 //                            "TYPE_Exposure view name:" + data.mVB.getTag("name")
 //                                    + "traceId:" + data.mVB.getTag("activityTraceId"), Toast.LENGTH_SHORT).show();
-                return true;
-            }
-        });
-    }
+        return true;
+    };
 
     @Override
     protected void onResume() {
@@ -125,6 +122,13 @@ public class PreviewActivity extends AppCompatActivity {
         }
 
         setTitle(mTemplateName);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        sVafContext.getEventManager().unregister(EventManager.TYPE_Click, mClickProcessor);
+        sVafContext.getEventManager().unregister(EventManager.TYPE_Exposure, mExposureProcessor);
     }
 
     protected void preview(String templateName, com.alibaba.fastjson.JSONObject jsonData) {
