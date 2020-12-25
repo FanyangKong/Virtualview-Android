@@ -72,10 +72,7 @@ dependencies {
     compile 'com.android.support:recyclerview-v7:26.0.2@aar'
     compile 'com.nostra13.universalimageloader:universal-image-loader:1.9.5'
     compile 'com.squareup.picasso:picasso:2.5.2'
-    provided('com.alibaba.android:virtual-common:1.0.9') {
-        changing = true
-    }
-    compile('com.alibaba.android:virtual-compiler:1.0.10@jar') {
+    compile('com.alibaba.android:virtual-compiler:1.0.11@jar') {
         exclude group: 'xmlpull', module: 'xmlpull'
         exclude group: 'net.sf.kxml', module: 'kxml2'
         changing = true
